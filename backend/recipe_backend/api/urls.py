@@ -3,14 +3,14 @@ from django.urls.conf import include
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from .views import (FollowViewSet, IngredientView, LoginApiView, LogoutApiView,
-                    RecipeViesSet, TagsView, UserViewSet)
+from .views import (FollowViewSet, IngredientViewSet, LoginApiView,
+                    LogoutApiView, RecipeViesSet, TagsViewSet, UserViewSet)
 
 v1_router = DefaultRouter()
 
 v1_router.register(r'users', UserViewSet, basename="users")
-v1_router.register(r'tags', TagsView, basename='tags')
-v1_router.register(r'ingredients', IngredientView, basename="ingredients")
+v1_router.register(r'tags', TagsViewSet, basename='tags')
+v1_router.register(r'ingredients', IngredientViewSet, basename="ingredients")
 v1_router.register(r'recipes', RecipeViesSet, basename="recipes")
 v1_router.register(r'subscriptions', FollowViewSet, basename="subscriptions")
 

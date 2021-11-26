@@ -4,52 +4,54 @@ from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import constraints
-
+from django.db.models.functions import Lower
 from users.models import User
 
 
 class Tag(models.Model):
     '''Model for tags'''
-    name = models.CharField(verbose_name='tag', unique=True, max_length=50)
-    slug = models.SlugField(verbose_name='slug', max_length=50, unique=True)
-    color = models.CharField(verbose_name='color', max_length=50, unique=False)
+    name = models.CharField(verbose_name='tag', unique=True, max_length=200)
+    slug = models.SlugField(verbose_name='slug', max_length=200, unique=True)
+    color = models.CharField(verbose_name='color', max_length=7, unique=False)
 
     class Meta:
-        verbose_name = "Tag"
-        verbose_name_plural = "Tags"
+        verbose_name = 'Tag'
+        verbose_name_plural = 'Tags'
 
     def __str__(self):
         return self.slug
 
 
 class Ingredient(models.Model):
+    '''Model for ingredients'''
     name = models.CharField(
-        verbose_name='name of ingredient', unique=True,
+        verbose_name='name_ingredient', null=False,
         max_length=200)
     measurement_unit = models.CharField(
         verbose_name='type of measurment', null=False, max_length=200)
 
     class Meta:
-        ordering = ['name']
-        verbose_name = "Ingredient"
-        verbose_name_plural = "Ingredients"
+        ordering = [Lower('name'), ]
+        verbose_name = 'Ingredient'
+        verbose_name_plural = 'Ingredients'
         constraints = [constraints.UniqueConstraint(
             fields=['name', 'measurement_unit'], name='prevention doubling')]
 
     def __str__(self):
-        return f'{self.ingredient}, ({self.measure})'
+        return f'{self.ingredient}, ({self.measurement_unit})'
 
 
 class RecipeIngredient(models.Model):
+    '''Model that connected Ingredient whith Recipe'''
     ingredient = models.ForeignKey(
-        Ingredient, verbose_name='id of ingredient',
+        Ingredient, verbose_name='id_ingredient',
         on_delete=models.CASCADE,
-        related_name="ingredient"
+        related_name='ingredient'
     )
     recipe = models.ForeignKey(
-        "Recipe", verbose_name='id of recipe',
+        'Recipe', verbose_name='id_recipe',
         on_delete=models.CASCADE,
-        related_name="recipe",
+        related_name='recipe',
         null=False,)
     amount = models.PositiveIntegerField(
         verbose_name='quantity of ingredient',
@@ -61,6 +63,7 @@ class RecipeIngredient(models.Model):
 
 
 class Recipe(models.Model):
+    '''Model for Recipe'''
     ingredients = models.ManyToManyField(
         Ingredient, verbose_name='ingredients',
         through=RecipeIngredient, blank=False)

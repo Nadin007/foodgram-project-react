@@ -1,61 +1,59 @@
 from django.contrib.auth.hashers import make_password
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
+from recipe_features.models import Follow, Ingredient, Recipe, Tag
 from rest_framework import (filters, generics, mixins, pagination, permissions,
                             response, status, views, viewsets)
 from rest_framework.decorators import action
 from rest_framework_simplejwt.tokens import RefreshToken
-
-from recipe_features.models import Follow, Ingredient, Recipe, Tag
 from users.models import User
 
 from .permissions import (AdminOrViewOrCreateOrReadOnly, IsAdminOrReadOnly,
-                          OwnerOrReadOnly)
+                          OwnerAdminOrReadOnly)
 from .serializers import (ChangePasswordSerializer,
                           ConfirmationTokenSerializer, FollowSerializer,
                           IngredientSerializer, RecipeSerializer,
-                          TagsSerializes, UserSerializer)
+                          TagsSerializes, UserSerializer, PostRecipeSerializer)
 
 
 class LoginApiView(views.APIView):
-    """Provides access and refresh tokens in response to code
+    '''Provides access and refresh tokens in response to code
     confirmation and email and activate a user
-    """
+    '''
+
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
         serializer = ConfirmationTokenSerializer(
             data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
-        email = serializer.validated_data.get("email")
+        email = serializer.validated_data.get('email')
         user = generics.get_object_or_404(User, email=email)
         refresh_token = RefreshToken.for_user(user)
         return response.Response(
             {
-                "auth_token": str(refresh_token.access_token),
-                "refresh_token": str(refresh_token),
+                'auth_token': str(refresh_token.access_token),
+                'refresh_token': str(refresh_token),
             }, status=status.HTTP_201_CREATED
         )
 
 
 class LogoutApiView(views.APIView):
-    """Provides access and refresh tokens in response to code
+    '''Provides access and refresh tokens in response to code
     confirmation and email and activate a user
-    """
+    '''
+
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
         try:
-            refresh_token = request.auth
-            print('ttrtrtrtrtrtr')
-            print(refresh_token)
-            token = RefreshToken(refresh_token)
+            token = request.auth
             token.blacklist()
             return response.Response({}, status=status.HTTP_201_CREATED)
 
         except Exception as e:
             raise Exception(
-                f"Bad request {e}",
+                f'Bad request {e}',
             )
 
 
@@ -141,37 +139,65 @@ class CustomizedListCreateDestroyViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-    """Base ViewSet for Tag & Ingredient.
+    '''Base ViewSet for Tag & Ingredient.
     Allowed actions: `list`, `create`, `delete`.
     Other actions returns HTTP 405.
-    """
+    '''
 
     filter_backends = (filters.OrderingFilter, filters.SearchFilter)
-    ordering_fields = ("name",)
-    search_fields = ("name",)
-    lookup_field = "slug"
+    ordering_fields = ('name',)
+    search_fields = ('name',)
+    lookup_field = 'slug'
     pagination_class = pagination.LimitOffsetPagination
     permission_classes = [IsAdminOrReadOnly]
 
 
-class TagsView(CustomizedListCreateDestroyViewSet):
+class TagsViewSet(viewsets.ModelViewSet):
+    '''Viewset for Tag.'''
     queryset = Tag.objects.all()
     serializer_class = TagsSerializes
+    ordering_fields = ('name',)
+    lookup_field = 'id'
+    lookup_field = 'slug'
+    permission_classes = [IsAdminOrReadOnly]
 
 
-class IngredientView(CustomizedListCreateDestroyViewSet):
+class IngredientViewSet(viewsets.ModelViewSet):
+    '''Viewset for Ingredient.'''
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
+    ordering_fields = ('name',)
+    lookup_field = 'name'
+    lookup_field = 'id'
+    permission_classes = [IsAdminOrReadOnly]
+    filter_backends = (
+        DjangoFilterBackend, filters.SearchFilter,
+        filters.OrderingFilter)
+    filterset_fields = ('name', )
+    search_fields = ('^name', 'name__recipe', )
 
 
 class RecipeViesSet(viewsets.ModelViewSet):
+    '''Viewset for Recipe.'''
     queryset = Recipe.objects.all()
-    serializer_class = RecipeSerializer
     pagination_class = pagination.LimitOffsetPagination
-    permission_classes = (OwnerOrReadOnly,)
+    permission_classes = (OwnerAdminOrReadOnly,)
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        return serializer.save(author=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid()
+        recipe = self.perform_create(serializer)
+        return response.Response(RecipeSerializer(
+            recipe, context={'request': request}).data,
+            status=status.HTTP_201_CREATED)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return RecipeSerializer
+        return PostRecipeSerializer
 
 
 class ListRetriveCreateViewSet(
@@ -195,4 +221,3 @@ class FollowViewSet(ListRetriveCreateViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-
