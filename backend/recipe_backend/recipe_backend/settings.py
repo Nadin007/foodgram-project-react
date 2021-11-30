@@ -25,7 +25,6 @@ INTERNAL_IPS = [
 INSTALLED_APPS = [
     'users',
     'recipe_features',
-    'api',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -36,7 +35,6 @@ INSTALLED_APPS = [
     'django_filters',
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
-    'sorl.thumbnail',
     'django.template.context_processors',
 ]
 

@@ -14,14 +14,13 @@ class MyUserAdmin(UserAdmin):
         'email',
         'role',
         'is_active',
-        'bio',
     ]
     list_editable = ('role', )
     fieldsets = (
         (
             None,
             {'fields': (
-                'username', 'email', 'password', 'role', 'bio', 'avatar')}
+                'username', 'email', 'password', 'role', 'avatar')}
         ),
         ('Permissions',
          {'fields': ('is_staff', 'is_active')}),
@@ -39,8 +38,7 @@ class MyUserAdmin(UserAdmin):
                 'password2',
                 'is_staff',
                 'is_active',
-                'role',
-                'bio',)
+                'role')
              }
         ),
     )

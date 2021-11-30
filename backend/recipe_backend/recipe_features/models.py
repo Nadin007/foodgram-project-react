@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import constraints
 from django.db.models.functions import Lower
+
 from users.models import User
 
 
@@ -158,28 +158,3 @@ class Follow(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user} follows {self.author}"
-
-
-class Comment(models.Model):
-    recipe = models.ForeignKey(
-        Recipe, verbose_name='recipe', on_delete=models.CASCADE,
-        related_name='comments')
-    author = models.ForeignKey(
-        User, verbose_name='user', on_delete=models.CASCADE,
-        related_name='comments')
-    text = models.TextField(verbose_name='comment', max_length=500)
-    created = models.DateTimeField(
-        verbose_name='date published', auto_now_add=True)
-    path = ArrayField(models.IntegerField())
-
-    class Meta:
-        ordering = ['-created']
-
-    def __str__(self):
-        return self.text[:15]
-
-    def getoffset(self):
-        level = len(self.path) - 1
-        if level > 5:
-            level = 5
-        return level

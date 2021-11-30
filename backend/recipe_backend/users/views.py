@@ -1,19 +1,19 @@
 from django.contrib.auth.hashers import make_password
 from django.db.models import Q
-from django_filters.rest_framework import DjangoFilterBackend
-from recipe_features.models import Follow, Ingredient, Recipe, Tag
-from rest_framework import (filters, generics, mixins, pagination, permissions,
-                            response, status, views, viewsets)
+from django.shortcuts import get_object_or_404
+from rest_framework import (filters, generics, mixins, permissions, response,
+                            status, views, viewsets)
 from rest_framework.decorators import action
 from rest_framework_simplejwt.tokens import RefreshToken
+
+from recipe_features.models import Follow
+from recipe_features.pagination_hub import CustomResultsSetPagination
 from users.models import User
 
-from .permissions import (AdminOrViewOrCreateOrReadOnly, IsAdminOrReadOnly,
-                          OwnerAdminOrReadOnly)
-from .serializers import (ChangePasswordSerializer,
-                          ConfirmationTokenSerializer, FollowSerializer,
-                          IngredientSerializer, RecipeSerializer,
-                          TagsSerializes, UserSerializer, PostRecipeSerializer)
+from .permissions import AdminOrViewOrCreateOrReadOnly
+from .serializerFollow import FollowSerializer, FollowViewSerializer
+from .serializersUser import (ChangePasswordSerializer,
+                              ConfirmationTokenSerializer, UserSerializer)
 
 
 class LoginApiView(views.APIView):
@@ -68,7 +68,7 @@ class UserViewSet(viewsets.ModelViewSet):
     lookup_field = "id"
     filter_backends = (filters.SearchFilter,)
     search_fields = ("username",)
-    pagination_class = pagination.LimitOffsetPagination
+    pagination_class = CustomResultsSetPagination
 
     def create(self, request):
         """Create a new user and send an account activation email"""
@@ -88,6 +88,9 @@ class UserViewSet(viewsets.ModelViewSet):
                 )
         return response.Response(
             serializer.data, status=status.HTTP_201_CREATED)
+
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
     @action(
         detail=False,
@@ -125,99 +128,43 @@ class UserViewSet(viewsets.ModelViewSet):
         new_password = serializer.validated_data.get('new_password')
         user.set_password(new_password)
         user.save()
-        print(user)
         if hasattr(user, 'auth_token'):
-            print('dsjjjsdjsadjjd')
             user.auth_token.blacklist()
         return response.Response(
             '', status=status.HTTP_204_NO_CONTENT)
 
-
-class CustomizedListCreateDestroyViewSet(
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
-    viewsets.GenericViewSet,
-):
-    '''Base ViewSet for Tag & Ingredient.
-    Allowed actions: `list`, `create`, `delete`.
-    Other actions returns HTTP 405.
-    '''
-
-    filter_backends = (filters.OrderingFilter, filters.SearchFilter)
-    ordering_fields = ('name',)
-    search_fields = ('name',)
-    lookup_field = 'slug'
-    pagination_class = pagination.LimitOffsetPagination
-    permission_classes = [IsAdminOrReadOnly]
-
-
-class TagsViewSet(viewsets.ModelViewSet):
-    '''Viewset for Tag.'''
-    queryset = Tag.objects.all()
-    serializer_class = TagsSerializes
-    ordering_fields = ('name',)
-    lookup_field = 'id'
-    lookup_field = 'slug'
-    permission_classes = [IsAdminOrReadOnly]
-
-
-class IngredientViewSet(viewsets.ModelViewSet):
-    '''Viewset for Ingredient.'''
-    queryset = Ingredient.objects.all()
-    serializer_class = IngredientSerializer
-    ordering_fields = ('name',)
-    lookup_field = 'name'
-    lookup_field = 'id'
-    permission_classes = [IsAdminOrReadOnly]
-    filter_backends = (
-        DjangoFilterBackend, filters.SearchFilter,
-        filters.OrderingFilter)
-    filterset_fields = ('name', )
-    search_fields = ('^name', 'name__recipe', )
-
-
-class RecipeViesSet(viewsets.ModelViewSet):
-    '''Viewset for Recipe.'''
-    queryset = Recipe.objects.all()
-    pagination_class = pagination.LimitOffsetPagination
-    permission_classes = (OwnerAdminOrReadOnly,)
-
-    def perform_create(self, serializer):
-        return serializer.save(author=self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid()
-        recipe = self.perform_create(serializer)
-        return response.Response(RecipeSerializer(
-            recipe, context={'request': request}).data,
+    @action(
+        detail=True,
+        methods=['GET', 'DELETE'],
+        url_path="subscribe",
+        permission_classes=[permissions.IsAuthenticated],
+    )
+    def subscribe(self, request, id):
+        if request.method == 'DELETE':
+            return self.unsubscribe(request, id)
+        user = self.request.user.id
+        author = get_object_or_404(User, id=id)
+        data = {'user': user, 'author': id}
+        serializer = FollowSerializer(
+            data=data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=self.request.user, author=author)
+        return response.Response(FollowViewSerializer(
+            author, context={'request': request}).data,
             status=status.HTTP_201_CREATED)
 
-    def get_serializer_class(self):
-        if self.request.method == 'GET':
-            return RecipeSerializer
-        return PostRecipeSerializer
+    def unsubscribe(self, request, pk):
+        subscribtion = get_object_or_404(
+            Follow, user=request.user, author=pk)
+        subscribtion.delete()
+        return response.Response(
+            status=status.HTTP_204_NO_CONTENT)
 
 
-class ListRetriveCreateViewSet(
-        mixins.ListModelMixin, mixins.RetrieveModelMixin,
-        mixins.CreateModelMixin, viewsets.GenericViewSet):
-    pass
-
-
-class FollowViewSet(ListRetriveCreateViewSet):
-    queryset = Follow.objects.all()
-    serializer_class = FollowSerializer
-    permission_classes = (permissions.IsAuthenticated,)
-    pagination_class = pagination.LimitOffsetPagination
-    filter_backends = (
-        DjangoFilterBackend, filters.SearchFilter,
-        filters.OrderingFilter)
-    search_fields = ('author__username',)
+class FollowListSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    pagination_class = CustomResultsSetPagination
+    serializer_class = FollowViewSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Follow.objects.filter(user=self.request.user)
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        return User.objects.filter(follower__user=self.request.user)

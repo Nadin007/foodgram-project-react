@@ -30,9 +30,6 @@ class User(AbstractUser):
     email = models.EmailField(
         verbose_name='email address', blank=False,
         unique=True, max_length=254)
-    bio = models.TextField(
-        verbose_name='A few words about yourself',
-        blank=True)
     role = models.CharField(
         verbose_name='user`s role', choices=ROLE_CHOICES.choices,
         default=ROLE_CHOICES.USER, null=False,

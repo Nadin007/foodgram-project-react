@@ -4,6 +4,7 @@ import os
 from collections import OrderedDict
 
 from django.core.management.base import BaseCommand
+
 from recipe_features.models import Ingredient
 
 MODELS_CONTAINER = [
