@@ -5,10 +5,11 @@ from collections import OrderedDict
 
 from django.core.management.base import BaseCommand
 
-from recipe_features.models import Ingredient
+from recipe_features.models import Ingredient, Tag
 
 MODELS_CONTAINER = [
     Ingredient,
+    Tag
 ]
 
 
@@ -57,7 +58,6 @@ class Command(BaseCommand):
 
         csv_folder = options.get("csv_folder", "")
         all_files = glob.glob(csv_folder + "/*.csv")
-
         for (key, value) in self.file_to_model(
             all_files,
             MODELS_CONTAINER,

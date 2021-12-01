@@ -3,6 +3,11 @@ from django_filters import BooleanFilter, CharFilter
 from django_filters import rest_framework as filters
 
 from recipe_features.models import Recipe
+from rest_framework.filters import SearchFilter
+
+
+class IngredientSearchFilter(SearchFilter):
+    search_param = 'name'
 
 
 class RecipeFilter(filters.FilterSet):

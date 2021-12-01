@@ -1,24 +1,28 @@
+from django.db.models.aggregates import Sum
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import (filters, pagination, permissions, response, status,
                             viewsets)
 from rest_framework.decorators import action
 
-from recipe_features.filters import RecipeFilter
-from recipe_features.models import Cart, Favorite, Ingredient, Recipe, Tag
+from recipe_features.filters import RecipeFilter, IngredientSearchFilter
+from recipe_features.models import (
+    Cart, Favorite, Ingredient, Recipe, Tag, RecipeIngredient)
 
 from .permissions import IsAdminOrReadOnly, OwnerAdminOrReadOnly
 from .serializers import (CartSerializer, FavoriteSerializer,
                           IngredientSerializer, PostRecipeSerializer,
                           RecipeSerializer, RecipeViewSerializer,
                           TagsSerializes)
+from recipe_features.download_feature.txt_downloader import TXTDownload
+from recipe_features.download_feature.pdf_downloader import PDFDownload
+from recipe_features.download_feature.utils import format_ingredient
 
 
 class TagsViewSet(viewsets.ModelViewSet):
     '''Viewset for Tag.'''
     queryset = Tag.objects.all()
     serializer_class = TagsSerializes
-    ordering_fields = ('name',)
     lookup_field = 'id'
     lookup_field = 'slug'
     permission_classes = [IsAdminOrReadOnly]
@@ -32,11 +36,8 @@ class IngredientViewSet(viewsets.ModelViewSet):
     lookup_field = 'name'
     lookup_field = 'id'
     permission_classes = [IsAdminOrReadOnly]
-    filter_backends = (
-        DjangoFilterBackend, filters.SearchFilter,
-        filters.OrderingFilter)
-    filterset_fields = ('name', )
-    search_fields = ('^name', 'name__recipe', )
+    filter_backends = (IngredientSearchFilter, )
+    search_fields = ('^name',)
 
 
 class RecipeViesSet(viewsets.ModelViewSet):
@@ -107,7 +108,8 @@ class RecipeViesSet(viewsets.ModelViewSet):
     @action(
         detail=True,
         methods=['GET', 'DELETE'],
-        url_path='shopping_cart'
+        url_path='shopping_cart',
+        permission_classes=[permissions.IsAuthenticated],
     )
     def add_in_cart(self, request, pk):
         if request.method == 'DELETE':
@@ -131,3 +133,19 @@ class RecipeViesSet(viewsets.ModelViewSet):
         purchase.delete()
         return response.Response(
             status=status.HTTP_204_NO_CONTENT)
+
+    @action(
+        detail=False,
+        methods=['GET'],
+        url_path='download_shopping_cart',
+        permission_classes=[permissions.IsAuthenticated],
+    )
+    def show_cart(self, request):
+        list_of_ingredients = RecipeIngredient.objects.filter(
+            recipe__purchases__user=self.request.user
+        ).values(
+            'ingredient__name', 'ingredient__measurement_unit').annotate(
+                amount=Sum('amount'))
+        list_of_recipes = [format_ingredient(s) for s in list_of_ingredients]
+        result = PDFDownload()
+        return result.download(list_of_recipes, 'СПИСОК ПРОДУКТОВ:')
