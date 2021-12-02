@@ -1,4 +1,4 @@
-![yamdb_workflow](https://github.com/Nadin007/foodgram-project-reac/actions/workflows/foodgram-workflow.yml/badge.svg)
+![yamdb_workflow](https://github.com/Nadin007/foodgram-project-react/actions/workflows/foodgram-workflow.yml/badge.svg)
 
 # О проекте foodgram-project-react
 
