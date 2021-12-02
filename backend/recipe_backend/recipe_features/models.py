@@ -4,7 +4,6 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import constraints
 from django.db.models.functions import Lower
-
 from users.models import User
 
 
@@ -94,7 +93,7 @@ class Recipe(models.Model):
     )
 
     class Meta:
-        ordering = ['pud_date']
+        ordering = ['-pud_date']
         verbose_name = 'Recipe'
         verbose_name_plural = 'Recipes'
 

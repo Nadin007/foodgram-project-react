@@ -1,11 +1,10 @@
 from django.utils.translation import gettext_lazy as _
 from drf_extra_fields.fields import Base64ImageField
+from recipe_features.models import (Cart, Favorite, Ingredient, Recipe,
+                                    RecipeIngredient, Tag, TagRecipe)
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueTogetherValidator
-
-from recipe_features.models import (Cart, Favorite, Ingredient, Recipe,
-                                    RecipeIngredient, Tag, TagRecipe)
 from users.serializersUser import UserSerializer
 
 
@@ -54,9 +53,9 @@ class RecipeSerializer(serializers.ModelSerializer):
         many=True
     )
     ingredients = serializers.SerializerMethodField(read_only=True)
-    image = Base64ImageField(required=False, use_url=True, max_length=None)
+    image = serializers.SerializerMethodField(read_only=True)
     author = UserSerializer(read_only=True)
-    is_favorite = serializers.SerializerMethodField('favorite')
+    is_favorited = serializers.SerializerMethodField('favorite')
     is_in_shopping_cart = serializers.SerializerMethodField('shopping_list')
 
     def favorite(self, instance):
@@ -76,11 +75,16 @@ class RecipeSerializer(serializers.ModelSerializer):
         ingredients = RecipeIngredient.objects.filter(recipe=instance)
         return RecipeIngredientSerializer(ingredients, many=True).data
 
+    def get_image(self, obj):
+        if obj.image:
+            return obj.image.url
+        return None
+
     class Meta:
         model = Recipe
         fields = (
             'id', 'image', 'tags', 'author', 'name', 'text', 'cooking_time',
-            'ingredients', 'is_favorite', 'is_in_shopping_cart')
+            'ingredients', 'is_favorited', 'is_in_shopping_cart')
         required_fields = [
             'ingredients', 'tags', 'image', 'name', 'text', 'cooking_time']
 
@@ -143,9 +147,7 @@ class PostRecipeSerializer(serializers.ModelSerializer):
         return recipe
 
     def update(self, instance, validated_data):
-        instance.image = validated_data.get('image')
-        instance.text = validated_data.get('text')
-        instance.cooking_time = validated_data.get('cooking_time')
+
         val_tags = validated_data.pop('tags')
         val_ingredients = validated_data.pop('ingredients')
         if instance.tags != val_tags:
@@ -157,7 +159,7 @@ class PostRecipeSerializer(serializers.ModelSerializer):
                 RecipeIngredient.objects.create(
                     ingredient=ingredient["id"], amount=ingredient['amount'],
                     recipe=instance)
-        return instance
+        return super().update(instance, validated_data)
 
 
 class TagRecipeSerializer(serializers.ModelSerializer):
@@ -206,17 +208,12 @@ class FavoriteSerializer(serializers.ModelSerializer):
         if not request or request.user.is_anonymous:
             raise serializers.ValidationError(
                 "User should be authorised.")
-        if (
-            request.user == data["recipe"].author
-           and request.method == 'GET'):
-            raise serializers.ValidationError(
-                "User can not like his own recipe.")
-        """recipe = Favorite.objects.filter(
+        recipe = Favorite.objects.filter(
             user=request.user, recipe=data["recipe"])
         if recipe:
             raise serializers.ValidationError(
                 "It is already added to favourite.")
-        return data"""
+        return data
 
 
 class CartSerializer(serializers.ModelSerializer):

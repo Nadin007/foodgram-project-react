@@ -1,5 +1,8 @@
 id,name,slug,color
-4,borsch,borsh,#E26C2D
-5,cooking,cooking,#E26C2D
+1,Lunch,lunch,#9d2610
+2,breakfast,breakfast,#449955
+3,Dinner,dinner,#DFFF00
+4,Dessert,dessert,#008000
+5,Snaks,snaks,#000080
 6,sweets,sweets,#E26C2D
-7,cake,cake,#E26C2D
+7,cake,cake,#FF0000

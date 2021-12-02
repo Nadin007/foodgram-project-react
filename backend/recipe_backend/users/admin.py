@@ -43,5 +43,5 @@ class MyUserAdmin(UserAdmin):
         ),
     )
     ordering = ('email', )
-    search_fields = ('username', 'role')
-    list_filter = ('is_active', 'role')
+    search_fields = ('username', 'email')
+    list_filter = ('username', 'email')

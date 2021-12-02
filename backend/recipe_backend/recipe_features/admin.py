@@ -1,11 +1,18 @@
-from django.contrib import admin
+import os
 
-from .models import Ingredient, Recipe, RecipeIngredient, Tag, TagRecipe
+from django.contrib import admin
+from django.utils.safestring import mark_safe
+
+from recipe_backend.settings import BASE_DIR
+
+from .models import (
+    Ingredient, Recipe, RecipeIngredient, Tag, TagRecipe, Cart,
+    Follow, Favorite)
 
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
-    list_display = ("name", "slug", "color")
+    list_display = ("name", "slug", "color", "id")
     search_fields = ("slug",)
     ordering = ('name', )
     list_filter = ('slug', 'color')
@@ -32,22 +39,59 @@ class RecipeIngredientAdmin(admin.ModelAdmin):
     ordering = ("recipe",)
 
 
+class RecipeTagInline(admin.TabularInline):
+    model = TagRecipe
+
+
+class RecipeIngridienceInline(admin.TabularInline):
+    model = RecipeIngredient
+
+
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     fields = (
-        'image', 'author', 'name', 'text', 'cooking_time', )
+        'image', 'author', 'name', 'text', 'cooking_time')
     list_display = (
-        'image', 'author', 'name', 'text', 'cooking_time',
+        'get_image', 'author', 'name', 'text', 'cooking_time',
+        'get_favorited'
         )
     search_fields = ("name",)
     ordering = ("name",)
+    inlines = (RecipeTagInline, RecipeIngridienceInline)
+    list_filter = ('name', 'author', 'tags')
 
-    """def get_queryset(self, request):
-        print('jvndvijdvibfdvb')
-        qs = super().get_queryset(request)
-        qs.get('tags')
-        print(request, qs)
-        return qs.prefetch_related('tag')
+    def get_ing(self):
+        if self.image:
+            return self.image.url
+        return os.path.join(BASE_DIR, 'media/avatars/default-1.png')
 
-    def get_tags(self, obj):
-        return "\n".join([p.tags for p in obj.tag.all()])"""
+    @admin.display()
+    def get_image(self, instance):
+        return mark_safe(
+                '<img src="%s" width="50" height="50" />' % instance.image.url)
+
+    @admin.display(description='Number of likes')
+    def get_favorited(self, instance):
+        result = Favorite.objects.filter(recipe=instance).count()
+        return result
+
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ("user", "purchase")
+    search_fields = ("user",)
+    ordering = ("user",)
+
+
+@admin.register(Favorite)
+class FavoriteAdmin(admin.ModelAdmin):
+    list_display = ("user", "recipe")
+    search_fields = ("user", "recipe")
+    ordering = ("user",)
+
+
+@admin.register(Follow)
+class FollowAdmin(admin.ModelAdmin):
+    list_display = ("user", "author")
+    search_fields = ("user", "author")
+    ordering = ("user",)

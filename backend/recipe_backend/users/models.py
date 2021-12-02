@@ -16,6 +16,7 @@ class ROLE_CHOICES(models.TextChoices):
 
 
 class User(AbstractUser):
+    '''Model for user.'''
     username_validator = UnicodeUsernameValidator()
     username = models.CharField(
         verbose_name='username', max_length=150,

@@ -1,5 +1,6 @@
-from django.http import FileResponse
 from functools import reduce
+
+from django.http import FileResponse
 
 
 class TXTDownload():

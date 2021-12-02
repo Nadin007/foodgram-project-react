@@ -1,7 +1,6 @@
 from django.db.models import Q
-from django_filters import BooleanFilter, CharFilter
+from django_filters import AllValuesMultipleFilter, BooleanFilter
 from django_filters import rest_framework as filters
-
 from recipe_features.models import Recipe
 from rest_framework.filters import SearchFilter
 
@@ -17,7 +16,8 @@ class RecipeFilter(filters.FilterSet):
 
     is_in_shopping_cart = BooleanFilter(method='get_in_cart')
     is_favorited = BooleanFilter(method='get_is_favourite')
-    tags = CharFilter(field_name='tags__slug')
+    tags = AllValuesMultipleFilter(
+        field_name='tags__slug')
 
     def get_in_cart(self, queryset, field_name, value):
         if value:

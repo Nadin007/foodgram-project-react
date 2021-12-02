@@ -1,13 +1,12 @@
-from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
-
 from recipe_features.models import Follow, Recipe
 from recipe_features.serializers import RecipeViewSerializer
+from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 from users.models import User
 
 
 class FollowViewSerializer(serializers.ModelSerializer):
-    recipe = serializers.SerializerMethodField('get_recipe', read_only=True)
+    recipes = serializers.SerializerMethodField('get_recipe', read_only=True)
     recipes_count = serializers.SerializerMethodField(
         'recipes_amount', read_only=True)
     is_subscribed = serializers.SerializerMethodField(
@@ -16,7 +15,7 @@ class FollowViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('email', 'id', 'username', 'first_name', 'last_name',
-                  'is_subscribed', 'recipe', 'recipes_count')
+                  'is_subscribed', 'recipes', 'recipes_count')
 
     def get_subscribed(self, obj):
         request = self.context.get('request')
