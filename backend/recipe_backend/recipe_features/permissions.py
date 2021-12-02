@@ -1,5 +1,5 @@
 from rest_framework import permissions
-from users.models import ROLE_CHOICES
+from users.models import RoleChoises
 
 
 class OwnerAdminOrReadOnly(permissions.BasePermission):
@@ -18,7 +18,7 @@ class OwnerAdminOrReadOnly(permissions.BasePermission):
             return True
         return (
             obj.author == request.user
-            or request.user.role in [ROLE_CHOICES.ADMIN]
+            or request.user.role in [RoleChoises.ADMIN]
             or request.user.is_superuser)
 
 
@@ -27,7 +27,7 @@ class IsAdmin(permissions.IsAuthenticated):
     def has_permission(self, request, view):
         return super().has_permission(request, view) and (
             request.user.role == (
-                ROLE_CHOICES.ADMIN or request.user.is_superuser)
+                RoleChoises.ADMIN or request.user.is_superuser)
         )
 
 
@@ -52,7 +52,7 @@ class AdminOrViewOrCreateOrReadOnly(permissions.BasePermission):
         if request.method == 'POST':
             return True
         return (request.user.is_superuser
-                or request.user.role in [ROLE_CHOICES.ADMIN])
+                or request.user.role in [RoleChoises.ADMIN])
 
     def has_object_permission(self, request, view, obj):
         if request.method == 'GET' and request.user.is_authenticated:

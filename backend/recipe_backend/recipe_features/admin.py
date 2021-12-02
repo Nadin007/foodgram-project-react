@@ -51,8 +51,7 @@ class RecipeAdmin(admin.ModelAdmin):
         'image', 'author', 'name', 'text', 'cooking_time')
     list_display = (
         'get_image', 'author', 'name', 'text', 'cooking_time',
-        'get_favorited'
-        )
+        'get_favorited')
     search_fields = ("name",)
     ordering = ("name",)
     inlines = (RecipeTagInline, RecipeIngridienceInline)
@@ -66,12 +65,11 @@ class RecipeAdmin(admin.ModelAdmin):
     @admin.display()
     def get_image(self, instance):
         return mark_safe(
-                '<img src="%s" width="50" height="50" />' % instance.image.url)
+            '<img src="%s" width="50" height="50" />' % instance.image.url)
 
     @admin.display(description='Number of likes')
     def get_favorited(self, instance):
-        result = Favorite.objects.filter(recipe=instance).count()
-        return result
+        return Favorite.objects.filter(recipe=instance).count()
 
 
 @admin.register(Cart)

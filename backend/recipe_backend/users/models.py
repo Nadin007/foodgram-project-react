@@ -9,7 +9,7 @@ from django.utils.safestring import mark_safe
 from recipe_backend.settings import BASE_DIR
 
 
-class ROLE_CHOICES(models.TextChoices):
+class RoleChoises(models.TextChoices):
     USER = 'user'
     ADMIN = 'admin'
 
@@ -31,8 +31,8 @@ class User(AbstractUser):
         verbose_name='email address', blank=False,
         unique=True, max_length=254)
     role = models.CharField(
-        verbose_name='user`s role', choices=ROLE_CHOICES.choices,
-        default=ROLE_CHOICES.USER, null=False,
+        verbose_name='user`s role', choices=RoleChoises.choices,
+        default=RoleChoises.USER, null=False,
         max_length=60)
     avatar = models.ImageField(
         upload_to='avatars/',
@@ -60,7 +60,7 @@ class User(AbstractUser):
 
     def save(self, *args, **kwargs) -> None:
         if self.is_superuser:
-            self.role = ROLE_CHOICES.ADMIN
+            self.role = RoleChoises.ADMIN
             self.is_active = True
         return super().save()
 

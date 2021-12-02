@@ -22,8 +22,7 @@ class CustomUserViewSet(UserViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ("username",)
     pagination_class = CustomResultsSetPagination
-    filter_backends = (
-         DjangoFilterBackend, filters.SearchFilter)
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
 
     @action(
         detail=True,
