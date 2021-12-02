@@ -2,12 +2,10 @@ import os
 
 from django.contrib import admin
 from django.utils.safestring import mark_safe
-
 from recipe_backend.settings import BASE_DIR
 
-from .models import (
-    Ingredient, Recipe, RecipeIngredient, Tag, TagRecipe, Cart,
-    Follow, Favorite)
+from .models import (Cart, Favorite, Follow, Ingredient, Recipe,
+                     RecipeIngredient, Tag, TagRecipe)
 
 
 @admin.register(Tag)
