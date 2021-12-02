@@ -21,6 +21,7 @@ class IngredientAdmin(admin.ModelAdmin):
     list_display = ("name", "measurement_unit", "id")
     search_fields = ("name",)
     ordering = ("name",)
+    list_filter = ('name',)
 
 
 @admin.register(TagRecipe)
