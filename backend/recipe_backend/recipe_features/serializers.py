@@ -5,7 +5,7 @@ from recipe_features.models import (Cart, Favorite, Ingredient, Recipe,
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueTogetherValidator
-from users.serializersUser import UserSerializer
+from users.serializersUser import CustomUserSerializer
 
 
 class TagsSerializes(serializers.ModelSerializer):
@@ -54,7 +54,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     )
     ingredients = serializers.SerializerMethodField(read_only=True)
     image = serializers.SerializerMethodField(read_only=True)
-    author = UserSerializer(read_only=True)
+    author = CustomUserSerializer(read_only=True)
     is_favorited = serializers.SerializerMethodField('favorite')
     is_in_shopping_cart = serializers.SerializerMethodField('shopping_list')
 

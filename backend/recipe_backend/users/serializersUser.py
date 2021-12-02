@@ -22,7 +22,7 @@ class CustomUserSerializer(UserSerializer):
         model = User
         fields = (
             'email', 'username', 'first_name', 'id',
-            'last_name', 'avatar', 'date_joined', 'is_subscribed')
+            'last_name', 'date_joined', 'is_subscribed')
         read_only_fields = ('date_joined', )
         ref_name = 'ReadOnlyUsers'
 

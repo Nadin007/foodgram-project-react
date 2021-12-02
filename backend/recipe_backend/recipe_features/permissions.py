@@ -6,7 +6,7 @@ class OwnerAdminOrReadOnly(permissions.BasePermission):
     """Manage permissions.
     SAFE methods allowed for anyone.
     `POST` allowed for authenticated users.
-    Other methods allowed for object author, moderator or admin.
+    Other methods allowed for object author or admin.
     """
 
     def has_permission(self, request, view):
@@ -18,6 +18,26 @@ class OwnerAdminOrReadOnly(permissions.BasePermission):
             return True
         return (
             obj.author == request.user
+            or request.user.role in [RoleChoises.ADMIN]
+            or request.user.is_superuser)
+
+
+class CurrentUserOrAdminOrReadOnly(permissions.BasePermission):
+    """Manage permissions.
+    SAFE methods allowed for anyone.
+    `POST` allowed for authenticated users.
+    Other methods allowed for object author or admin.
+    """
+
+    def has_permission(self, request, view):
+        return (request.method in permissions.SAFE_METHODS
+                or request.user.is_authenticated)
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return (
+            obj.user == request.user
             or request.user.role in [RoleChoises.ADMIN]
             or request.user.is_superuser)
 

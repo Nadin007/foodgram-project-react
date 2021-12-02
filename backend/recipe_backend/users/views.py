@@ -3,8 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from recipe_features.models import Follow
 from recipe_features.pagination_hub import CustomResultsSetPagination
-from recipe_features.permissions import (AdminOrViewOrCreateOrReadOnly,
-                                         OwnerAdminOrReadOnly)
+from recipe_features.permissions import CurrentUserOrAdminOrReadOnly
 from rest_framework import (filters, mixins, permissions, response, status,
                             viewsets)
 from rest_framework.decorators import action
@@ -18,7 +17,7 @@ class CustomUserViewSet(UserViewSet):
     on permission and role
     """
     queryset = User.objects.all()
-    permission_classes = [OwnerAdminOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
     filter_backends = (filters.SearchFilter,)
     search_fields = ("username",)
     pagination_class = CustomResultsSetPagination
@@ -28,7 +27,7 @@ class CustomUserViewSet(UserViewSet):
         detail=True,
         methods=['GET', 'DELETE'],
         url_path="subscribe",
-        permission_classes=[AdminOrViewOrCreateOrReadOnly],
+        permission_classes=[CurrentUserOrAdminOrReadOnly],
         pagination_class=None
     )
     def subscribe(self, request, id):
@@ -46,6 +45,7 @@ class CustomUserViewSet(UserViewSet):
             status=status.HTTP_201_CREATED)
 
     def unsubscribe(self, request, pk):
+        print(self.permission_classes)
         subscribtion = get_object_or_404(
             Follow, user=request.user, author=pk)
         subscribtion.delete()

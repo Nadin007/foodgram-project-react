@@ -142,7 +142,7 @@ DJOSER = {
     },
     'PERMISSIONS': {
         'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
-        'user_list': ['recipe_features.permissions.OwnerAdminOrReadOnly']
+        'user_list': ['djoser.permissions.CurrentUserOrAdminOrReadOnly']
     },
     'HIDE_USERS': False,
 }
@@ -150,5 +150,4 @@ DJOSER = {
 
 REST_USE_JWT = True
 JWT_AUTH_COOKIE = "my-app-auth"
-DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 PASSWORD_RESET_TIMEOUT_DAYS = 1 / 24
