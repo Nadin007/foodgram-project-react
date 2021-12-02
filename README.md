@@ -118,7 +118,7 @@ docker-compose exec web python manage.py collectstatic --no-input
 
 ## Инструкция по заполнению .env
 
-- Создайте файл .env с переменными окружения для работы с базой данных:
+- Создайте файл .env с переменными окружения для работы с базой данных в дирректории infra/:
 
 ```sh
 touch .env
