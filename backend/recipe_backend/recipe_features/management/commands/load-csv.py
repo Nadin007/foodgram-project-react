@@ -31,7 +31,8 @@ class Command(BaseCommand):
         """Comparing model database fields with csv file fields"""
         for i, _ in enumerate(fields_name):
             fields_name[i] = fields_name[i].lower().replace(" ", "_")
-            if not fields_name[i] in model_fields:
+            print(fields_name[i])
+            if not fields_name[i] in model_fields and fields_name[i] != 'id':
                 return False
         return True
 

@@ -164,7 +164,7 @@ SECRET_KEY =полученный_ключ
 В папке с файлом manage.py выполните команду:
 
 ```sh
-python3 manage.py load-csv recipe_backend/recipe_features/data
+python3 manage.py load-csv recipe_features/data
 
 ```
 
