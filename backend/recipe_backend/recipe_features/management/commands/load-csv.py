@@ -6,10 +6,12 @@ from collections import OrderedDict
 from django.core.management.base import BaseCommand
 
 from recipe_features.models import Ingredient, Tag
+from users.models import User
 
 MODELS_CONTAINER = [
     Ingredient,
-    Tag
+    Tag,
+    User
 ]
 
 
@@ -32,7 +34,6 @@ class Command(BaseCommand):
         """Comparing model database fields with csv file fields"""
         for i, _ in enumerate(fields_name):
             fields_name[i] = fields_name[i].lower().replace(" ", "_")
-            print(fields_name[i])
             if not fields_name[i] in model_fields and fields_name[i] != 'id':
                 return False
         return True
@@ -50,7 +51,7 @@ class Command(BaseCommand):
             csv_file_list.append((csv_file, mod_name))
         for model in all_models:
             for file_name, compare_name in csv_file_list:
-                if str(model.__name__).lower() == compare_name:
+                if str(model.__name__).lower() == str(compare_name).lower():
                     model_file_dict[model] = file_name
         return model_file_dict
 
@@ -78,5 +79,6 @@ class Command(BaseCommand):
                     key.objects.bulk_create(entity_list)
                     print(f"finish {key}")
                 except Exception as e:
-                    return f"Кажется, у вас уже есть эти данные! {e}"
+                    print(f"Кажется, у вас уже есть эти данные! {e}")
+                    continue
         return "Данные были успешно загружены в базу данных."

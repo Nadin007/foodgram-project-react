@@ -38,7 +38,7 @@ class Ingredient(models.Model):
             fields=['name', 'measurement_unit'], name='prevention doubling')]
 
     def __str__(self):
-        return f'{self.ingredient}, ({self.measurement_unit})'
+        return f'{self.name}, ({self.measurement_unit})'
 
 
 class RecipeIngredient(models.Model):
@@ -56,7 +56,7 @@ class RecipeIngredient(models.Model):
         verbose_name='quantity of ingredient',
         validators=[
             MinValueValidator(0, 'The amount must be more than zero.'),
-            MaxValueValidator(10000, 'The amount must be less than zero.')
+            MaxValueValidator(10000, 'The amount must be less than 10000.')
         ])
 
     class Meta:
@@ -83,8 +83,8 @@ class Recipe(models.Model):
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='time of cooking',
         validators=[
-            MinValueValidator(1),
-            MaxValueValidator(1000)
+            MinValueValidator(1, 'The cooking_time must be more than zero.'),
+            MaxValueValidator(1000, 'The cooking_time must be less than 1000.')
         ])
     pud_date = models.DateTimeField(
         verbose_name='date of publication', default=datetime.now,)

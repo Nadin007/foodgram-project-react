@@ -147,8 +147,8 @@ class RecipeViesSet(viewsets.ModelViewSet):
         list_of_ingredients = RecipeIngredient.objects.filter(
             recipe__purchases__user=self.request.user
         ).values(
-            'recipe_ingredients__name',
-            'recipe_ingredients__measurement_unit').annotate(
+            'ingredient__name',
+            'ingredient__measurement_unit').annotate(
                 amount=Sum('amount'))
         list_of_recipes = [format_ingredient(s) for s in list_of_ingredients]
         result = PDFDownload()

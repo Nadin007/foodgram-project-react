@@ -116,7 +116,7 @@ class PostRecipeSerializer(serializers.ModelSerializer):
         tags = self.initial_data.get('tags')
         ingredients = self.initial_data.get('ingredients')
         cooking_time = self.initial_data.get('cooking_time')
-        if not cooking_time or cooking_time <= 0:
+        if not cooking_time or int(cooking_time) <= 0:
             raise serializers.ValidationError(
                 {'Cooking_timeError':
                  'Required field and must be more than 0.'})
