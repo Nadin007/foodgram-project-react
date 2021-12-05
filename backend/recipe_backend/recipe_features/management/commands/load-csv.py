@@ -6,12 +6,10 @@ from collections import OrderedDict
 from django.core.management.base import BaseCommand
 
 from recipe_features.models import Ingredient, Tag
-from users.models import User
 
 MODELS_CONTAINER = [
     Ingredient,
-    Tag,
-    User
+    Tag
 ]
 
 
