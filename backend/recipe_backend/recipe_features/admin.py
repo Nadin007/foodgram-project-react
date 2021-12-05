@@ -5,41 +5,43 @@ from django.utils.safestring import mark_safe
 from recipe_backend.settings import BASE_DIR
 
 from .models import (Cart, Favorite, Follow, Ingredient, Recipe,
-                     RecipeIngredient, Tag, TagRecipe)
+                     RecipeIngredient, Tag)
 
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
-    list_display = ("name", "slug", "color", "id")
-    search_fields = ("slug",)
+    list_display = ('name', 'slug', 'color', 'id')
+    search_fields = ('slug',)
     ordering = ('name', )
     list_filter = ('slug', 'color')
 
 
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
-    list_display = ("name", "measurement_unit", "id")
-    search_fields = ("name",)
-    ordering = ("name",)
+    list_display = ('name', 'measurement_unit', 'id')
+    search_fields = ('name',)
+    ordering = ('name',)
     list_filter = ('name',)
 
 
+'''
 @admin.register(TagRecipe)
 class TagRecipeAdmin(admin.ModelAdmin):
-    list_display = ("tag", "recipe")
-    search_fields = ("recipe",)
-    ordering = ("recipe",)
+    list_display = ('tag', 'recipe')
+    search_fields = ('recipe',)
+    ordering = ('recipe',)
+'''
 
 
 @admin.register(RecipeIngredient)
 class RecipeIngredientAdmin(admin.ModelAdmin):
-    list_display = ("ingredient", "recipe", "amount")
-    search_fields = ("recipe",)
-    ordering = ("recipe",)
+    list_display = ('ingredient', 'recipe', 'amount')
+    search_fields = ('recipe',)
+    ordering = ('recipe',)
 
 
 class RecipeTagInline(admin.TabularInline):
-    model = TagRecipe
+    model = Recipe.tags.through
 
 
 class RecipeIngridienceInline(admin.TabularInline):
@@ -53,15 +55,15 @@ class RecipeAdmin(admin.ModelAdmin):
     list_display = (
         'get_image', 'author', 'name', 'text', 'cooking_time',
         'get_favorited')
-    search_fields = ("name",)
-    ordering = ("name",)
+    search_fields = ('name',)
+    ordering = ('name',)
     inlines = (RecipeTagInline, RecipeIngridienceInline)
     list_filter = ('name', 'author', 'tags')
 
     def get_ing(self):
         if self.image:
             return self.image.url
-        return os.path.join(BASE_DIR, 'media/avatars/default-1.png')
+        return os.path.join(BASE_DIR, 'static/media/avatars/default-1.png')
 
     @admin.display()
     def get_image(self, instance):
@@ -75,20 +77,20 @@ class RecipeAdmin(admin.ModelAdmin):
 
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
-    list_display = ("user", "purchase")
-    search_fields = ("user",)
-    ordering = ("user",)
+    list_display = ('user', 'purchase')
+    search_fields = ('user',)
+    ordering = ('user',)
 
 
 @admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):
-    list_display = ("user", "recipe")
-    search_fields = ("user", "recipe")
-    ordering = ("user",)
+    list_display = ('user', 'recipe')
+    search_fields = ('user', 'recipe')
+    ordering = ('user',)
 
 
 @admin.register(Follow)
 class FollowAdmin(admin.ModelAdmin):
-    list_display = ("user", "author")
-    search_fields = ("user", "author")
-    ordering = ("user",)
+    list_display = ('user', 'author')
+    search_fields = ('user', 'author')
+    ordering = ('user',)

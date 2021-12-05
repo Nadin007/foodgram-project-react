@@ -1,7 +1,8 @@
 from django.utils import timezone
 from djoser.serializers import UserCreateSerializer, UserSerializer
-from recipe_features.models import Follow
 from rest_framework import serializers
+
+from recipe_features.models import Follow
 from users.models import User
 
 

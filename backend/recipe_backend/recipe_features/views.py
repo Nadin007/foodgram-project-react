@@ -1,14 +1,15 @@
 from django.db.models.aggregates import Sum
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, permissions, response, status, viewsets
+from rest_framework.decorators import action
+
 from recipe_features.download_feature.pdf_downloader import PDFDownload
 from recipe_features.download_feature.utils import format_ingredient
 from recipe_features.filters import IngredientSearchFilter, RecipeFilter
 from recipe_features.models import (Cart, Favorite, Ingredient, Recipe,
                                     RecipeIngredient, Tag)
 from recipe_features.permissions import IsAdminOrReadOnly, OwnerAdminOrReadOnly
-from rest_framework import filters, permissions, response, status, viewsets
-from rest_framework.decorators import action
 
 from .pagination_hub import CustomResultsSetPagination
 from .serializers import (CartSerializer, FavoriteSerializer,
@@ -146,7 +147,8 @@ class RecipeViesSet(viewsets.ModelViewSet):
         list_of_ingredients = RecipeIngredient.objects.filter(
             recipe__purchases__user=self.request.user
         ).values(
-            'ingredient__name', 'ingredient__measurement_unit').annotate(
+            'recipe_ingredients__name',
+            'recipe_ingredients__measurement_unit').annotate(
                 amount=Sum('amount'))
         list_of_recipes = [format_ingredient(s) for s in list_of_ingredients]
         result = PDFDownload()

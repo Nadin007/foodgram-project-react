@@ -1,7 +1,8 @@
-from recipe_features.models import Follow, Recipe
-from recipe_features.serializers import RecipeViewSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
+
+from recipe_features.models import Follow, Recipe
+from recipe_features.serializers import RecipeViewSerializer
 from users.models import User
 
 

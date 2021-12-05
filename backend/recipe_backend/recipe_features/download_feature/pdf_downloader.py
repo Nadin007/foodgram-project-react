@@ -8,7 +8,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 
 
-class PDFDownload():
+class PDFDownload:
     def download(self, downloadlist, header):
         font_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                  'fonts', 'OpenSans-Regular.ttf')

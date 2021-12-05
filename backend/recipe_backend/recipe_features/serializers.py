@@ -1,11 +1,11 @@
-from django.utils.translation import gettext_lazy as _
 from drf_extra_fields.fields import Base64ImageField
-from recipe_features.models import (Cart, Favorite, Ingredient, Recipe,
-                                    RecipeIngredient, Tag, TagRecipe)
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueTogetherValidator
-from users.serializersUser import CustomUserSerializer
+
+from recipe_features.models import (Cart, Favorite, Ingredient, Recipe,
+                                    RecipeIngredient, Tag)
+from users.serializers_user import CustomUserSerializer
 
 
 class TagsSerializes(serializers.ModelSerializer):
@@ -105,33 +105,42 @@ class PostRecipeSerializer(serializers.ModelSerializer):
         required_fields = [
             'ingredients', 'tags', 'image', 'name', 'text', 'cooking_time']
 
+    def add_ingredients(self, list_of_obj, recipe):
+        for ingredient in list_of_obj:
+            RecipeIngredient.objects.create(
+                ingredient=ingredient["id"], amount=ingredient['amount'],
+                recipe=recipe
+            )
+
     def validate(self, attrs):
-        tags = self.initial_data.get('tags', None)
-        ingredients = self.initial_data.get('ingredients', None)
+        tags = self.initial_data.get('tags')
+        ingredients = self.initial_data.get('ingredients')
+        cooking_time = self.initial_data.get('cooking_time')
+        if not cooking_time or cooking_time <= 0:
+            raise serializers.ValidationError(
+                {'Cooking_timeError':
+                 'Required field and must be more than 0.'})
         if not tags:
             raise serializers.ValidationError(
-                _({'TagsError': 'Required field.'})
-            )
-        step1 = 0
-        while step1 <= len(tags):
+                {'TagsError': 'Required field.'})
+        if not ingredients:
+            raise serializers.ValidationError(
+                {'IngredientsError': 'Required field.'})
+        while 0 < len(tags):
             tag = tags.pop()
             if tag in tags:
                 raise serializers.ValidationError(
                     {'TagsError': 'The field \'tag\' must be unique.'})
-            step1 += 1
         if not ingredients:
             raise serializers.ValidationError(
-                _({'IngredientsError': 'Required field.'})
-            )
-        step2 = 0
-        while step2 <= len(ingredients):
+                {'IngredientsError': 'Required field.'})
+        while 0 < len(ingredients):
             ingredient = ingredients.pop()
             if ingredient in ingredients:
                 raise serializers.ValidationError(
                     {
                         'IngredientsError':
                         'The field \'ingredient\' must be unique.'})
-            step2 += 1
         return super().validate(attrs)
 
     def create(self, validated_data):
@@ -139,11 +148,7 @@ class PostRecipeSerializer(serializers.ModelSerializer):
         ingredients = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
-        for ingredient in ingredients:
-            RecipeIngredient.objects.create(
-                ingredient=ingredient["id"], amount=ingredient['amount'],
-                recipe=recipe
-            )
+        self.add_ingredients(ingredients, recipe)
         return recipe
 
     def update(self, instance, validated_data):
@@ -151,17 +156,14 @@ class PostRecipeSerializer(serializers.ModelSerializer):
         val_tags = validated_data.pop('tags')
         val_ingredients = validated_data.pop('ingredients')
         if instance.tags != val_tags:
-            TagRecipe.objects.filter(recipe=instance).all().delete()
             instance.tags.set(val_tags)
         if instance.ingredients != val_ingredients:
             RecipeIngredient.objects.filter(recipe=instance).all().delete()
-            for ingredient in val_ingredients:
-                RecipeIngredient.objects.create(
-                    ingredient=ingredient["id"], amount=ingredient['amount'],
-                    recipe=instance)
+            self.add_ingredients(val_ingredients, instance)
         return super().update(instance, validated_data)
 
 
+'''
 class TagRecipeSerializer(serializers.ModelSerializer):
     tag = TagsSerializes(many=True)
     recipe = RecipeSerializer(many=True)
@@ -169,6 +171,7 @@ class TagRecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = TagRecipe
         fields = "__all__"
+'''
 
 
 class RecipeViewSerializer(serializers.ModelSerializer):

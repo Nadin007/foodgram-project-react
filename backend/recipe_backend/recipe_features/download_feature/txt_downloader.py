@@ -3,7 +3,7 @@ from functools import reduce
 from django.http import FileResponse
 
 
-class TXTDownload():
+class TXTDownload:
     def download(self, downloadlist, header):
         title = header + '\n\n'
         plot = reduce(lambda akk, s: akk + f'* {s}\n', downloadlist, title)

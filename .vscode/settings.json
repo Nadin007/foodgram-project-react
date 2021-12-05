@@ -1,6 +1,0 @@
-{
-    "python.analysis.extraPaths": [
-        "./yatube",
-        "./backend/venv/lib/python3.9/site-packages"
-    ]
-}

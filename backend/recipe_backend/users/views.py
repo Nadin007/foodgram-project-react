@@ -1,15 +1,16 @@
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from recipe_features.models import Follow
-from recipe_features.pagination_hub import CustomResultsSetPagination
-from recipe_features.permissions import CurrentUserOrAdminOrReadOnly
 from rest_framework import (filters, mixins, permissions, response, status,
                             viewsets)
 from rest_framework.decorators import action
+
+from recipe_features.models import Follow
+from recipe_features.pagination_hub import CustomResultsSetPagination
+from recipe_features.permissions import CurrentUserOrAdminOrReadOnly
 from users.models import User
 
-from .serializerFollow import FollowSerializer, FollowViewSerializer
+from .serializers_follow import FollowSerializer, FollowViewSerializer
 
 
 class CustomUserViewSet(UserViewSet):
@@ -45,7 +46,6 @@ class CustomUserViewSet(UserViewSet):
             status=status.HTTP_201_CREATED)
 
     def unsubscribe(self, request, pk):
-        print(self.permission_classes)
         subscribtion = get_object_or_404(
             Follow, user=request.user, author=pk)
         subscribtion.delete()
