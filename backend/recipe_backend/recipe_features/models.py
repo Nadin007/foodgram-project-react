@@ -76,7 +76,7 @@ class Recipe(models.Model):
     image = models.ImageField(
         verbose_name='image', upload_to='recipes/')
     name = models.CharField(
-        verbose_name='name of dish', unique=False,
+        verbose_name='name of dish',
         max_length=200)
     text = models.TextField(
         verbose_name='description of the cooking process')
@@ -103,11 +103,6 @@ class Recipe(models.Model):
             name=self.name,
             author=self.author
         )
-
-
-'''class TagRecipe(models.Model):
-    tag = models.ForeignKey(Tag, on_delete=models.CASCADE, related_name='tag')
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)'''
 
 
 class Cart(models.Model):

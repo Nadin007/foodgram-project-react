@@ -12,7 +12,7 @@ class TagsSerializes(serializers.ModelSerializer):
     '''Serializer for tags.'''
     class Meta:
         model = Tag
-        fields = "__all__"
+        fields = '__all__'
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -59,16 +59,16 @@ class RecipeSerializer(serializers.ModelSerializer):
     is_in_shopping_cart = serializers.SerializerMethodField('shopping_list')
 
     def favorite(self, instance):
-        if not instance or self.context["request"].user.is_anonymous:
+        if not instance or self.context['request'].user.is_anonymous:
             return False
         return Favorite.objects.filter(
-            user=self.context["request"].user.id, recipe=instance.id).exists()
+            user=self.context['request'].user.id, recipe=instance.id).exists()
 
     def shopping_list(self, instance):
-        if not instance or self.context["request"].user.is_anonymous:
+        if not instance or self.context['request'].user.is_anonymous:
             return False
         return Cart.objects.filter(
-            user=self.context["request"].user.id,
+            user=self.context['request'].user.id,
             purchase=instance.id).exists()
 
     def get_ingredients(self, instance):
@@ -108,7 +108,7 @@ class PostRecipeSerializer(serializers.ModelSerializer):
     def add_ingredients(self, list_of_obj, recipe):
         for ingredient in list_of_obj:
             RecipeIngredient.objects.create(
-                ingredient=ingredient["id"], amount=ingredient['amount'],
+                ingredient=ingredient['id'], amount=ingredient['amount'],
                 recipe=recipe
             )
 
@@ -126,21 +126,17 @@ class PostRecipeSerializer(serializers.ModelSerializer):
         if not ingredients:
             raise serializers.ValidationError(
                 {'IngredientsError': 'Required field.'})
-        while 0 < len(tags):
-            tag = tags.pop()
-            if tag in tags:
-                raise serializers.ValidationError(
-                    {'TagsError': 'The field \'tag\' must be unique.'})
+        if len(tags) > len(set(tags)):
+            raise serializers.ValidationError(
+                {'TagsError': 'The field \'tag\' must be unique.'})
         if not ingredients:
             raise serializers.ValidationError(
                 {'IngredientsError': 'Required field.'})
-        while 0 < len(ingredients):
-            ingredient = ingredients.pop()
-            if ingredient in ingredients:
-                raise serializers.ValidationError(
-                    {
-                        'IngredientsError':
-                        'The field \'ingredient\' must be unique.'})
+        if len(ingredients) > len(set(ingredients)):
+            raise serializers.ValidationError(
+                {
+                    'IngredientsError':
+                    'The field \'ingredient\' must be unique.'})
         return super().validate(attrs)
 
     def create(self, validated_data):
@@ -163,17 +159,6 @@ class PostRecipeSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
-'''
-class TagRecipeSerializer(serializers.ModelSerializer):
-    tag = TagsSerializes(many=True)
-    recipe = RecipeSerializer(many=True)
-
-    class Meta:
-        model = TagRecipe
-        fields = "__all__"
-'''
-
-
 class RecipeViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
@@ -182,11 +167,11 @@ class RecipeViewSerializer(serializers.ModelSerializer):
 
 class FavoriteSerializer(serializers.ModelSerializer):
     user = SlugRelatedField(
-        slug_field="username", read_only=True,
+        slug_field='username', read_only=True,
         default=serializers.CurrentUserDefault()
     )
     recipe = SlugRelatedField(
-        slug_field="id", required=True,
+        slug_field='id', required=True,
         queryset=Recipe.objects.all())
 
     class Meta:
@@ -197,7 +182,7 @@ class FavoriteSerializer(serializers.ModelSerializer):
         UniqueTogetherValidator(
             queryset=Favorite.objects.all(),
             fields=('user', 'recipe'),
-            message="It is already added to favourite."
+            message='It is already added to favourite.'
         )
     ]
 
@@ -210,12 +195,12 @@ class FavoriteSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if not request or request.user.is_anonymous:
             raise serializers.ValidationError(
-                "User should be authorised.")
+                'User should be authorised.')
         recipe = Favorite.objects.filter(
-            user=request.user, recipe=data["recipe"])
+            user=request.user, recipe=data['recipe'])
         if recipe:
             raise serializers.ValidationError(
-                "It is already added to favourite.")
+                'It is already added to favourite.')
         return data
 
 
@@ -223,13 +208,13 @@ class CartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cart
-        fields = "__all__"
+        fields = '__all__'
 
     def validate(self, data):
         request = self.context.get('request')
         if not request or request.user.is_anonymous:
             raise serializers.ValidationError(
-                "User should be authorised.")
+                'User should be authorised.')
         purchase = data['purchase']
         if Cart.objects.filter(
             user=request.user, purchase=purchase

@@ -1,13 +1,11 @@
 from rest_framework import permissions
-
 from users.models import RoleChoises
 
 
 class OwnerAdminOrReadOnly(permissions.BasePermission):
     """Manage permissions.
     SAFE methods allowed for anyone.
-    `POST` allowed for authenticated users.
-    Other methods allowed for object author or admin.
+    `POST` allowed for authenticated author or admin.
     """
 
     def has_permission(self, request, view):
@@ -27,7 +25,6 @@ class CurrentUserOrAdminOrReadOnly(permissions.BasePermission):
     """Manage permissions.
     SAFE methods allowed for anyone.
     `POST` allowed for authenticated users.
-    Other methods allowed for object author or admin.
     """
 
     def has_permission(self, request, view):
