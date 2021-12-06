@@ -25,15 +25,6 @@ class IngredientAdmin(admin.ModelAdmin):
     list_filter = ('name',)
 
 
-'''
-@admin.register(TagRecipe)
-class TagRecipeAdmin(admin.ModelAdmin):
-    list_display = ('tag', 'recipe')
-    search_fields = ('recipe',)
-    ordering = ('recipe',)
-'''
-
-
 @admin.register(RecipeIngredient)
 class RecipeIngredientAdmin(admin.ModelAdmin):
     list_display = ('ingredient', 'recipe', 'amount')
