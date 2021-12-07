@@ -132,7 +132,8 @@ class PostRecipeSerializer(serializers.ModelSerializer):
         if not ingredients:
             raise serializers.ValidationError(
                 {'IngredientsError': 'Required field.'})
-        if len(ingredients) > len(set(ingredients)):
+        if len(ingredients) > len(
+                set([ingredient['id'] for ingredient in ingredients])):
             raise serializers.ValidationError(
                 {
                     'IngredientsError':
