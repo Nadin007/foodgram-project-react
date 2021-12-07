@@ -6,6 +6,7 @@ from django.db import models
 from django.db.models import Q
 from django.utils import timezone
 from django.utils.safestring import mark_safe
+
 from recipe_backend.settings import BASE_DIR
 
 

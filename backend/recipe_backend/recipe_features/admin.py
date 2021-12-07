@@ -2,8 +2,8 @@ import os
 
 from django.contrib import admin
 from django.utils.safestring import mark_safe
-from recipe_backend.settings import BASE_DIR
 
+from recipe_backend.settings import BASE_DIR
 from .models import (Cart, Favorite, Follow, Ingredient, Recipe,
                      RecipeIngredient, Tag)
 

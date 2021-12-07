@@ -5,12 +5,11 @@ from rest_framework import (filters, mixins, permissions, response, status,
                             viewsets)
 from rest_framework.decorators import action
 
+from .serializers_follow import FollowSerializer, FollowViewSerializer
 from recipe_features.models import Follow
 from recipe_features.pagination_hub import CustomResultsSetPagination
 from recipe_features.permissions import CurrentUserOrAdminOrReadOnly
 from users.models import User
-
-from .serializers_follow import FollowSerializer, FollowViewSerializer
 
 
 class CustomUserViewSet(UserViewSet):
