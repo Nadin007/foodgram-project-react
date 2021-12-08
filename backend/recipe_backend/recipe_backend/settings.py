@@ -11,7 +11,7 @@ if os.path.isfile(dotenv_file):
 SECRET_KEY = os.environ.get(
     'SECRET_KEY', default='SUPffw-HeoKL3-K3Y-F0R-MY-PR0J3CT')
 
-DEBUG = bool(strtobool(os.getenv('DEBUG', 'True')))
+DEBUG = bool(strtobool(os.getenv('DEBUG', 'False')))
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 
