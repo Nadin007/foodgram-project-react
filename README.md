@@ -178,7 +178,9 @@ MIT
    [Docker]: <https://docs.docker.com/get-docker/>
    [Nadin007/foodgram-project-react]: https://github.com/Nadin007/foodgram-project-react
    
-Проект доступен по адресу: 
+Проект доступен по адресу: https://yatube-shareland.tk
+Логин для суперюзера: admin
+Пароль: admin
 
 Автор:
 Тумарева Надежда
