@@ -1,53 +1,53 @@
 ![yamdb_workflow](https://github.com/Nadin007/foodgram-project-react/actions/workflows/foodgram-workflow.yml/badge.svg)
 
-# О проекте foodgram-project-react
+# About "Grocery Assistant" project
 
-Приложение «Продуктовый помощник»: сайт, на котором пользователи будут публиковать рецепты, добавлять чужие рецепты в избранное и подписываться на публикации других авторов. Сервис «Список покупок» позволит пользователям создавать список продуктов, которые нужно купить для приготовления выбранных блюд.
+Application "Grocery Assistant": a site where users will publish recipes, add other people's recipes to favorites and subscribe to publications of other authors. The "Shopping List" service allows you to create a list of products that you need to buy to prepare the selected dishes.
 
-## Возможнности
+## Capabilities
 
-- Что могут делать неавторизованные пользователи
-  - Создать аккаунт.
-  - Просматривать рецепты на главной.
-  - Просматривать отдельные страницы рецептов.
-  - Просматривать страницы пользователей.
-  - Фильтровать рецепты по тегам.
+- Unauthorized users can do
+  - Create an account .
+  - View recipes on the main page.
+  - Retrieve a particular recipe-page.
+  - View user pages.
+  - Filter recipes by tags.
 
-- Что могут делать авторизованные пользователи
-  - Входить в систему под своим логином и паролем.
-  - Выходить из системы (разлогиниваться).
-  - Менять свой пароль.
-  - Создавать/редактировать/удалять собственные рецепты
-  - Просматривать рецепты на главной.
-  - Просматривать страницы пользователей.
-  - Просматривать отдельные страницы рецептов.
-  - Фильтровать рецепты по тегам.
-  - Работать с персональным списком избранного: добавлять в него рецепты или удалять их, просматривать свою страницу избранных рецептов.
-  - Работать с персональным списком покупок: добавлять/удалять любые рецепты, выгружать файл со количеством необходимых ингридиентов для рецептов из списка покупок.
-  - Подписываться на публикации авторов рецептов и отменять подписку, просматривать свою страницу подписок.
+- Authorized users can do
+  - Log in to the system using your username and password.
+  - Log out from the system.
+  - Update your password.
+  - Create/edit/delete your recipe.
+  - View recipes on the main page.
+  - View user pages.
+  - Retrieve a particular recipe-page.
+  - Filter recipes by tags.
+  - Work with your personal favorite list: add recipes to it or delete them, view your favorite page.
+  - Work with your personal cart list: add/delete any recipes to it, download a file with the amount of required ingredients for recipes from the cart list.
+  - Subscribe and unsubscribe to recipe authors' publications, view your subscription page. 
 
-- Что может делать администратор
-  - Администратор обладает всеми правами авторизованного пользователя.
-  - изменять пароль любого пользователя,
-  - создавать/блокировать/удалять аккаунты пользователей,
-  - редактировать/удалять любые рецепты,
-  - добавлять/удалять/редактировать ингредиенты.
-  - добавлять/удалять/редактировать теги.
+- Administrator can do
+  - Administrator has all the rights of an authorized user.
+  - Change password of any user.
+  - Create/block/delete any user accounts.
+  - Edit/delete any recipes.
+  - Add/delete/edit ingredients.
+  - Add/delete/edit tags.
 
-## Технология
+## Technology
 
-использует ряд проектов с открытым исходным кодом для правильной работы:
+Uses a number of open source projects to work properly:
 
-- [Django 3.2.9] - веб-фреймворк Python высокого уровня.
+- [Django 3.2.9] - high-level Python web framework.
 - [Python 3.9]
-- База данных PostgreSQL.
+- PostgreSQL database.
 
-И, конечно, сам API_YAMDB имеет открытый исходный код в [частном репозитории][Nadin007/foodgram-project-react]
-на GitHub.
+And of course "Grocery Assistant" itself is open source in [repository][Nadin007/foodgram-project-react]
+on GitHub.
 
-## Установка приложения
+## Installing the app
 
-Клонировать и перейти в репозиторий с помощью терминала:
+Clone and switch to the repository using the terminal:
 
 ```sh
 git clone git@github.com:Nadin007/foodgram-project-react.git
@@ -57,9 +57,9 @@ git clone git@github.com:Nadin007/foodgram-project-react.git
 cd backend/
 ```
 
-### Запуск foodgram-project-react в режиме разработки:
+### Running foodgram-project-react in development mode:
 
-- Создать и активировать виртуальную среду
+- Create and activate a virtual environment
 
 ```sh
 python3 -m venv env
@@ -69,12 +69,12 @@ python3 -m venv env
 source venv/bin/activate
 
 ```
-- Установить зависимости из файла requirements.txt
+- Install dependencies from the requirements.txt file
 
 ```sh
 pip install -r requirements.txt
 ```
-- В папке с файлом manage.py выполните команду:
+- In the folder with the manage.py file, run the command:
 
 ```sh
 cd recipe_backend/
@@ -84,46 +84,46 @@ cd recipe_backend/
 python3 manage.py runserver
 ````
 
-### Запуск foodgram-project-react в [Docker]:
+### Launch foodgram-project-react in [Docker]:
 
-- Выполните команду:
+- Run the command:
 
 ```sh
 cd ../../infra
 ```
 
-- Запустить docker-compose:
+- Launch a docker-compose:
 
 ```sh
 docker-compose up -d --build
 ```
-- Выполнить миграции в базе данных:
+- Run migrations on the database:
 
 ```sh
 docker-compose exec web python manage.py migrate --noinput
 ```
-- Создать суперпользователя:
+- Create superuser:
 
 ```sh
 docker-compose exec web python manage.py createsuperuser
 ```
-- Собрать статические файлы:
+- Collect static files:
 
 ```sh
 docker-compose exec web python manage.py collectstatic --no-input
 ```
-- Проект доступен по адресу:
+- The project is available at:
 
 `http://localhost/recipes`
 
-## Инструкция по заполнению .env
+## .env filling instructions
 
-- Создайте файл .env с переменными окружения для работы с базой данных в дирректории infra/:
+- Create a .env file with environment variables for working with the database in the infra/ directory:
 
 ```sh
 touch .env
 ```
-- Вставте в файл данные переменного окружения:
+- Paste the variable environment data into the file:
 
 ```
 DB_ENGINE=django.db.backends.postgresql
@@ -134,7 +134,7 @@ DB_HOST=db
 DB_PORT=5432
 ```
 
--  Для генерирования нового секретного ключа запустите следующую команду в терменале:
+-  To generate a new private key, run the following command in a terminal:
 
 ```sh
 python3 manage.py shell
@@ -142,7 +142,7 @@ python3 manage.py shell
 >>> print(get_random_secret_key())
 ```
 
-- Скопируйте полученный ключ и вставьте в папку .env:
+- Copy the received key and paste it into the .env folder:
 
 ```sh
 ...
@@ -150,25 +150,20 @@ python3 manage.py shell
 SECRET_KEY =полученный_ключ
 ```
 
-## О программе закрузки CSV файлов
+## About the program for downloading CSV files
 
-При загрузке CSV файлов в базу даннных приложения, убедитесь, что названия файлов
-соответствуют названию моделей приложения. В качестве пробелов между словами, в
-названиях файлов, используйте "_". Можете использовать в названиях как заглавные,
-так и прописные буквы. Так же убедитесь, что имена колонок в CSV файлах, которые
-явлются ForeignKey, названы по принципу <имя_поля_id> (пример genre_id).
-Все CSV файлы желательно закружать в директорию: ../../data.
+The file names have to match the names of the application models during importing data from CSV files into the database.You can use both uppercase and lowercase letters in filenames. Also make sure that the ForeignKey column names in the CSV files are named according to the principle <id_field_name> (example genre_id). All CSV files have to be uploaded to the directory: ../../data.
 
-## Работа с загрузчиком CSV файлов
+## Working with CSV file loader
 
-В папке с файлом manage.py выполните команду:
+In the folder with the manage.py file, run the command:
 
 ```sh
 python3 manage.py load-csv ../../data
 
 ```
 
-## Тип лицензии
+## License type
 
 MIT
 
@@ -178,9 +173,7 @@ MIT
    [Docker]: <https://docs.docker.com/get-docker/>
    [Nadin007/foodgram-project-react]: https://github.com/Nadin007/foodgram-project-react
    
-Проект доступен по адресу: https://yatube-shareland.tk
-Логин для суперюзера: admin
-Пароль: admin
+The project is available at: https://yatube-shareland.tk
 
-Автор:
-Тумарева Надежда
+Author:
+Tumareva Nadia
