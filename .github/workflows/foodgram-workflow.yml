@@ -34,7 +34,7 @@ jobs:
       env:
         SECRET_KEY: ${{secrets.SECRET_KEY}}
       run: |
-        python3 manage.py test tests.test_models -v 1
+        python3 manage.py test tests.test_models
 
   build_and_push_to_docker_hub:
     name: Push Docker image to Docker Hub
