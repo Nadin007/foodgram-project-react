@@ -8,6 +8,17 @@ jobs:
       matrix:
         python-version: ["3.7", "3.8", "3.9"]
 
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: github_actions
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 
@@ -33,10 +44,10 @@ jobs:
       working-directory: backend/recipe_backend
       env:
         SECRET_KEY: ${{secrets.SECRET_KEY}}
-        DB_NAME: ${{secrets.TEST}}
+        DB_NAME: github_actions
         DB_ENGINE: ${{ secrets.DB_ENGINE }}
-        POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-        POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
         DB_HOST: ${{ secrets.DB_HOST }}
         DB_PORT: ${{ secrets.DB_PORT }}
       run: |
