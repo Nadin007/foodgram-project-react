@@ -22,12 +22,19 @@ jobs:
         pip install flake8 pep8-naming flake8-broken-line flake8-return flake8-isort
         pip install -r requirements.txt
 
-    - name: Test with flake8 and django tests
+    - name: Test with flake8
       working-directory: backend/recipe_backend
       env:
         SECRET_KEY: ${{secrets.SECRET_KEY}}
       run: |
         python -m flake8
+
+    - name: Test with tests.test_model
+      working-directory: backend/recipe_backend
+      env:
+        SECRET_KEY: ${{secrets.SECRET_KEY}}
+      run: |
+        python3 manage.py test tests.test_models -v 1
 
   build_and_push_to_docker_hub:
     name: Push Docker image to Docker Hub
