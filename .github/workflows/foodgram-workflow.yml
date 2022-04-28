@@ -48,7 +48,7 @@ jobs:
         DB_ENGINE: ${{ secrets.DB_ENGINE }}
         POSTGRES_USER: postgres
         POSTGRES_PASSWORD: postgres
-        DB_HOST: ${{ secrets.DB_HOST }}
+        DB_HOST: 127.0.0.1
         DB_PORT: ${{ secrets.DB_PORT }}
       run: |
         python manage.py test tests.test_models
