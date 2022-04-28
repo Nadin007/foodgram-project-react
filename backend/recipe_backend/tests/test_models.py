@@ -1,5 +1,5 @@
-from django.test import TestCase, Client
 from django.db.utils import IntegrityError
+from django.test import Client, TestCase
 
 try:
     from recipe_features.models import Ingredient
