@@ -76,11 +76,18 @@ class TestUserModel(TestCase):
                 email="dimon2@gmail.com", password='123eddws')
         )
 
-    def test_correct(self):
-        user_2 = User.objects.create(
-            last_name="Juan", username="Ian_1",
-            email="ian@gmail.com", password='1111111')
-        self.assertEqual(user_2.first_name, '')
+    def test_correct_user_data(self):
+        field_data = {
+            'user_2': {'last_name': 'Juan', 'username': 'Ian_1',
+                       'email': 'ian@gmail.com', 'password': '1111111'},
+            'user_3': {'first_name': 'Juan', 'username': 'Juan_1',
+                       'email': 'Juan@gmail.com', 'password': '1111111'},
+            'user_4': {'first_name': 'vvv', 'username': 'VvV',
+                       'email': 'VVV@gmail.com', 'last_name': 'VVVV'},
+        }
+        for user, value in field_data.items():
+            user = User.objects.create(**value)
+        self.assertTrue(user)
 
 
 class TestFeathuresModel(TestCase):
