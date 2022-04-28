@@ -44,10 +44,12 @@ jobs:
       working-directory: backend/recipe_backend
       env:
         SECRET_KEY: ${{secrets.SECRET_KEY}}
-        DB_NAME: hello
+        DB_NAME: github_actions
         DB_ENGINE: ${{ secrets.DB_ENGINE }}
         POSTGRES_USER: postgres
         POSTGRES_PASSWORD: postgres
+        DB_HOST: 127.0.0.1
+        DB_PORT: 5432
       run: |
         python manage.py test tests.test_models
 
